@@ -94,7 +94,13 @@ function handleTemperatureIntent(session, deviceId, consentToken, apiEndpoint, c
 
 function getCurrentTemperature(postalCode, countryCode, callback) {
   var temp = 0.0;
-  const req = http.request(`http://api.openweathermap.org/data/2.5/weather?zip=${postalCode},${countryCode}&APPID=${process.env.weather_key}&units=imperial`, (res) => {
+  var units = '';
+  if (countryCode === 'US' || countryCode === 'BS' || countryCode === 'BZ' || countryCode === 'KY' || countryCode === 'MH' || countryCode === 'FM' || countryCode === 'PW' || countryCode === 'PR' || countryCode === 'GU' || countryCode === 'VI') {
+    units = 'imperial';
+  } else {
+    units = 'metric';
+  }
+  const req = http.request(`http://api.openweathermap.org/data/2.5/weather?zip=${postalCode},${countryCode}&APPID=${process.env.weather_key}&units=${units}`, (res) => {
     console.log(`STATUS: ${res.statusCode}`);
     console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
     res.setEncoding('utf8');
