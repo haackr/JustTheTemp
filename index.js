@@ -59,6 +59,13 @@ function getHelpResponse(callback) {
     callback({},buildSpeechletResponse(cardTitle, speechOutput, null, shouldEndSession));
 }
 
+function getAboutResponse(callback) {
+  const cardTitle = 'About';
+  const speechOutput = 'This skill was made by Ryan Haack.'
+  const shouldEndSession = true;
+  callback({},buildSpeechletResponse(cardTitle, speechOutput, null, shouldEndSession));
+}
+
 function handleSessionEndRequest(callback) {
 
 }
@@ -178,6 +185,8 @@ function onIntent(intentRequest, session, context, callback) {
         getHelpResponse(callback);
     } else if (intentName === 'AMAZON.StopIntent' || intentName === 'AMAZON.CancelIntent') {
         handleSessionEndRequest(callback);
+    } else if (intentName === 'AMAZON.AboutIntent') {
+      getAboutResponse(callback);
     } else {
         throw new Error('Invalid intent');
     }
