@@ -13,8 +13,8 @@ function buildSpeechletResponse(title, output, repromptText, shouldEndSession) {
         },
         card: {
             type: 'Simple',
-            title: `SessionSpeechlet - ${title}`,
-            content: `SessionSpeechlet - ${output}`,
+            title: `${title}`,
+            content: `${output}`,
         },
         reprompt: {
             outputSpeech: {
@@ -28,10 +28,15 @@ function buildSpeechletResponse(title, output, repromptText, shouldEndSession) {
 
 function buildPermissionResponse() {
   return {
+    outputSpeech: {
+      type: 'PlainText',
+      text: "Just the Temperature doesn't have permission to use your location. Please go into the alexa app and grant it permission.",
+    },
     card: {
-      type: 'AskForPermissionConsent',
-      permissions: ['read::alexa:device:all:address:country_and_postal_code']
-    }
+      type: 'AskForPermissionsConsent',
+      permissions: ['read::alexa:device:all:address:country_and_postal_code'],
+    },
+    shouldEndSession: true,
   };
 }
 
@@ -46,40 +51,50 @@ function buildResponse(sessionAttributes, speechletResponse) {
 
 // --------------- Functions that control the skill's behavior -----------------------
 
-function getWelcomeResponse(callback) {
+function getHelpResponse(callback) {
     // If we wanted to initialize the session to have some attributes we could add those here.
-    getCurrentTemperature(callback);
+    const cardTitle = 'Just the Temperature';
+    const speechOutput = 'To use Just the Temperature just start the skill or ask it the current temperature.'
 }
 
 function handleSessionEndRequest(callback) {
-    const cardTitle = 'Session Ended';
-    const speechOutput = 'Thank you for trying the Alexa Skills Kit sample. Have a nice day!';
-    // Setting this to true ends the session and exits the skill.
-    const shouldEndSession = true;
 
-    callback({}, buildSpeechletResponse(cardTitle, speechOutput, null, shouldEndSession));
 }
 
-function handleTemperatureIntent(intent, session, deviceId, consentToken, callback) {
-  if (consentToken === undefined) {
+function handleTemperatureIntent(session, deviceId, consentToken, apiEndpoint, callback) {
+  console.log(`consentToken=${JSON.stringify(consentToken)}`);
+  if (consentToken === null || consentToken === undefined) {
     console.log('consentToken not found');
     callback({},buildPermissionResponse());
-  }
-  // https.request({
-  //   host:
-  // }, (res)  => {
-  //
-  // });
-  else {
-    getCurrentTemperature(callback);
+  } else {
+    const host = apiEndpoint.replace('https://','');
+    const path = `/v1/devices/${deviceId}/settings/address/countryAndPostalCode`;
+    const auth = `Bearer ${consentToken}`;
+    console. log(`host=${host} path=${path} auth=${auth}`)
+    https.request({
+      host: host,
+      port: 443,
+      path: path,
+      method: 'GET',
+      headers: {
+        'Authorization': auth
+      }
+    }, (res)  => {
+      console.log(`STATUS: ${res.statusCode}`);
+      console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
+      res.setEncoding('utf8');
+      res.on('data', (chunk) => {
+        var addressRes = JSON.parse(chunk);
+        console.log(JSON.stringify(addressRes));
+        getCurrentTemperature(addressRes.postalCode, addressRes.countryCode, callback);
+      });
+    }).end();
   }
 }
 
-function getCurrentTemperature(callback) {
+function getCurrentTemperature(postalCode, countryCode, callback) {
   var temp = 0.0;
-  var postalCode = '87108';
-  var country = 'us';
-  http.request(`http://api.openweathermap.org/data/2.5/weather?zip=${postalCode},${country}&APPID=39079801eb920786911ab78ede676b58&units=imperial`, (res) => {
+  const req = http.request(`http://api.openweathermap.org/data/2.5/weather?zip=${postalCode},${countryCode}&APPID=${process.env.weather_key}&units=imperial`, (res) => {
     console.log(`STATUS: ${res.statusCode}`);
     console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
     res.setEncoding('utf8');
@@ -93,7 +108,16 @@ function getCurrentTemperature(callback) {
       const shouldEndSession = true;
       callback({}, buildSpeechletResponse(cardTitle, speechOutput, null, shouldEndSession));
     });
-  }).end();
+  });
+
+  req.on('error', (e) => {
+    const cardTitle = 'Error';
+    const speechOutput = 'There was an error getting weather data. Please try again later.';
+    const shouldEndSession = true;
+    callback({},buildSpeechletResponse(cardTitle, speechOutput, null, shouldEndSession));
+  });
+
+  req.end();
 }
 
 // --------------- Events -----------------------
@@ -103,6 +127,7 @@ function getCurrentTemperature(callback) {
  */
 function onSessionStarted(sessionStartedRequest, session) {
     console.log(`onSessionStarted requestId=${sessionStartedRequest.requestId}, sessionId=${session.sessionId}`);
+    console.log(process.env.weather_key);
 }
 
 /**
@@ -113,6 +138,15 @@ function onLaunch(launchRequest, session, context, callback) {
     //console.log(`deviceId=${context.System.device.deviceId}, consentToken=${context.System.user.permissions.consentToken}`);
     console.log(JSON.stringify(launchRequest));
 
+    var deviceId = null;
+    var consentToken = null;
+    var apiEndpoint = null;
+    if (context !== undefined){
+      deviceId = context.System.device.deviceId;
+      consentToken = context.System.user.permissions.consentToken;
+      apiEndpoint = context.System.apiEndpoint;
+    }
+    handleTemperatureIntent(session, deviceId, consentToken, apiEndpoint, callback);
     // Dispatch to your skill's launch.
     //handleTemperatureIntent(intent, session, deviceId, consentToken, callback);
 }
@@ -126,21 +160,20 @@ function onIntent(intentRequest, session, context, callback) {
 
     const intent = intentRequest.intent;
     const intentName = intentRequest.intent.name;
-    if (context.System !== undefined){
-      const deviceId = context.System.device.deviceId;
-      const consentToken = context.System.user.permissions.consentToken;
-      const apiEndpoint = context.System.apiEndpoint;
-    } else {
-      const deviceId = {};
-      const consentToken = {};
-      const apiEndpoint = {};
+    var deviceId = null;
+    var consentToken = null;
+    var apiEndpoint = null;
+    if (context !== undefined){
+      deviceId = context.System.device.deviceId;
+      consentToken = context.System.user.permissions.consentToken;
+      apiEndpoint = context.System.apiEndpoint;
     }
-
+    console.log(`deviceId=${JSON.stringify(deviceId)} consentToken=${JSON.stringify(consentToken)} apiEndpoint=${JSON.stringify(apiEndpoint)}`);
     // Dispatch to your skill's intent handlers
     if (intentName === 'TemperatureIntent') {
-        handleTemperatureIntent(intent, session, deviceId, consentToken, callback);
+        handleTemperatureIntent(session, deviceId, consentToken, apiEndpoint, callback);
     } else if (intentName === 'AMAZON.HelpIntent') {
-        getWelcomeResponse(callback);
+        getHelpResponse(callback);
     } else if (intentName === 'AMAZON.StopIntent' || intentName === 'AMAZON.CancelIntent') {
         handleSessionEndRequest(callback);
     } else {
@@ -166,11 +199,6 @@ exports.handler = (event, context, callback) => {
     try {
         console.log(`event.session.application.applicationId=${event.session.application.applicationId}`);
         console.log(`CONTEXT=${JSON.stringify(event.context)}`);
-
-        /**
-         * Uncomment this if statement and populate with your skill's application ID to
-         * prevent someone else from configuring a skill that sends requests to this function.
-         */
 
         if (event.session.application.applicationId !== 'amzn1.ask.skill.70de330a-7fb5-4939-a9b6-06cdf2e0690f') {
              callback('Invalid Application ID');
