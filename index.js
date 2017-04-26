@@ -73,7 +73,7 @@ function handleTemperatureIntent(session, deviceId, consentToken, apiEndpoint, c
     const path = `/v1/devices/${deviceId}/settings/address/countryAndPostalCode`;
     const auth = `Bearer ${consentToken}`;
     console. log(`host=${host} path=${path} auth=${auth}`)
-    https.request({
+    const req = https.request({
       host: host,
       port: 443,
       path: path,
@@ -85,12 +85,28 @@ function handleTemperatureIntent(session, deviceId, consentToken, apiEndpoint, c
       console.log(`STATUS: ${res.statusCode}`);
       console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
       res.setEncoding('utf8');
-      res.on('data', (chunk) => {
-        var addressRes = JSON.parse(chunk);
-        // console.log(JSON.stringify(addressRes));
-        getCurrentTemperature(addressRes.postalCode, addressRes.countryCode, callback);
-      });
-    }).end();
+      if(res.statusCode === 200) {
+        res.on('data', (chunk) => {
+          var addressRes = JSON.parse(chunk);
+          // console.log(JSON.stringify(addressRes));
+          getCurrentTemperature(addressRes.postalCode, addressRes.countryCode, callback);
+        });
+      } else {
+        const cardTitle = 'Error';
+        const speechOutput = 'There was a problem getting your location information. Please try again later.';
+        const shouldEndSession = true;
+        callback({},buildSpeechletResponse(cardTitle, speechOutput, null, shouldEndSession));
+      }
+    });
+
+    req.on('error', (e) => {
+      const cardTitle = 'Error';
+      const speechOutput = 'There was a problem getting your location information. Please try again later.';
+      const shouldEndSession = true;
+      callback({},buildSpeechletResponse(cardTitle, speechOutput, null, shouldEndSession));
+    });
+
+    req.end();
   }
 }
 
@@ -106,16 +122,23 @@ function getCurrentTemperature(postalCode, countryCode, callback) {
     console.log(`STATUS: ${res.statusCode}`);
     console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
     res.setEncoding('utf8');
-    res.on('data', (chunk) => {
-      var weatherRes = JSON.parse(chunk);
-      // console.log(JSON.stringify(weatherRes));
-      temp = weatherRes.main.temp;
-      console.log(temp);
-      const cardTitle = 'Current Temperature';
-      const speechOutput = `The current temperature is ${Math.round(temp)} degrees.`;
+    if (res.statusCode === 200){
+      res.on('data', (chunk) => {
+        var weatherRes = JSON.parse(chunk);
+        // console.log(JSON.stringify(weatherRes));
+        temp = weatherRes.main.temp;
+        console.log(temp);
+        const cardTitle = 'Current Temperature';
+        const speechOutput = `The current temperature is ${Math.round(temp)} degrees.`;
+        const shouldEndSession = true;
+        callback({}, buildSpeechletResponse(cardTitle, speechOutput, null, shouldEndSession));
+      });
+    } else {
+      const cardTitle = 'Error';
+      const speechOutput = 'There was an error getting weather data. Please try again later.';
       const shouldEndSession = true;
-      callback({}, buildSpeechletResponse(cardTitle, speechOutput, null, shouldEndSession));
-    });
+      callback({},buildSpeechletResponse(cardTitle, speechOutput, null, shouldEndSession));
+    }
   });
 
   req.on('error', (e) => {
