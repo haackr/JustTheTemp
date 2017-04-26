@@ -8,3 +8,11 @@ body {
 h1 {
   text-align: center;
 }
+
+p {
+  color: #333;
+}
+
+strong {
+  color: #000;
+}
