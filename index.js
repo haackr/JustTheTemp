@@ -172,7 +172,7 @@ function onLaunch(launchRequest, session, context, callback) {
     var deviceId = null;
     var consentToken = null;
     var apiEndpoint = null;
-    if (context !== undefined){
+    if (context !== undefined && context.hasOwnProperty('System.device.deviceId') && context.hasOwnProperty('System.user.permissions.consentToken') && context.hasOwnProperty('Sytem.apiEndpoint')){
       deviceId = context.System.device.deviceId;
       consentToken = context.System.user.permissions.consentToken;
       apiEndpoint = context.System.apiEndpoint;
