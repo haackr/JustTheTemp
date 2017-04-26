@@ -87,7 +87,7 @@ function handleTemperatureIntent(session, deviceId, consentToken, apiEndpoint, c
       res.setEncoding('utf8');
       res.on('data', (chunk) => {
         var addressRes = JSON.parse(chunk);
-        console.log(JSON.stringify(addressRes));
+        // console.log(JSON.stringify(addressRes));
         getCurrentTemperature(addressRes.postalCode, addressRes.countryCode, callback);
       });
     }).end();
@@ -108,7 +108,7 @@ function getCurrentTemperature(postalCode, countryCode, callback) {
     res.setEncoding('utf8');
     res.on('data', (chunk) => {
       var weatherRes = JSON.parse(chunk);
-      console.log(JSON.stringify(weatherRes));
+      // console.log(JSON.stringify(weatherRes));
       temp = weatherRes.main.temp;
       console.log(temp);
       const cardTitle = 'Current Temperature';
@@ -135,7 +135,7 @@ function getCurrentTemperature(postalCode, countryCode, callback) {
  */
 function onSessionStarted(sessionStartedRequest, session) {
     console.log(`onSessionStarted requestId=${sessionStartedRequest.requestId}, sessionId=${session.sessionId}`);
-    console.log(process.env.weather_key);
+    // console.log(process.env.weather_key);
 }
 
 /**
@@ -164,7 +164,7 @@ function onLaunch(launchRequest, session, context, callback) {
  */
 function onIntent(intentRequest, session, context, callback) {
     console.log(`onIntent requestId=${intentRequest.requestId}, intentName = ${intentRequest.intent.name}, sessionId=${session.sessionId}`);
-    console.log(JSON.stringify(context));
+    // console.log(JSON.stringify(context));
 
     const intent = intentRequest.intent;
     const intentName = intentRequest.intent.name;
