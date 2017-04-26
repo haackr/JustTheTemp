@@ -54,7 +54,9 @@ function buildResponse(sessionAttributes, speechletResponse) {
 function getHelpResponse(callback) {
     // If we wanted to initialize the session to have some attributes we could add those here.
     const cardTitle = 'Just the Temperature';
-    const speechOutput = 'To use Just the Temperature just start the skill or ask it the current temperature.'
+    const speechOutput = 'To use Just the Temperature, just start the skill or ask it the current temperature.';
+    const shouldEndSession = true;
+    callback({},buildSpeechletResponse(cardTitle, speechOutput, null, shouldEndSession));
 }
 
 function handleSessionEndRequest(callback) {
@@ -169,7 +171,7 @@ function onIntent(intentRequest, session, context, callback) {
     var deviceId = null;
     var consentToken = null;
     var apiEndpoint = null;
-    if (context !== undefined){
+    if (context !== undefined && context.hasOwnProperty('System.device.deviceId') && context.hasOwnProperty('System.user.permissions.consentToken') && context.hasOwnProperty('Sytem.apiEndpoint')){
       deviceId = context.System.device.deviceId;
       consentToken = context.System.user.permissions.consentToken;
       apiEndpoint = context.System.apiEndpoint;
