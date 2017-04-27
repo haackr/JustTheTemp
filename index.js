@@ -172,10 +172,14 @@ function onLaunch(launchRequest, session, context, callback) {
     var deviceId = null;
     var consentToken = null;
     var apiEndpoint = null;
-    if (context !== undefined && context.hasOwnProperty('System.device.deviceId') && context.hasOwnProperty('System.user.permissions.consentToken') && context.hasOwnProperty('Sytem.apiEndpoint')){
-      deviceId = context.System.device.deviceId;
-      consentToken = context.System.user.permissions.consentToken;
-      apiEndpoint = context.System.apiEndpoint;
+    if (context !== undefined){
+      try {
+        deviceId = context.System.device.deviceId;
+        consentToken = context.System.user.permissions.consentToken;
+        apiEndpoint = context.System.apiEndpoint;
+      } catch (e) {
+        console.log('fuck developing alexa skills');
+      }
     }
     handleTemperatureIntent(session, deviceId, consentToken, apiEndpoint, callback);
     // Dispatch to your skill's launch.
@@ -194,10 +198,14 @@ function onIntent(intentRequest, session, context, callback) {
     var deviceId = null;
     var consentToken = null;
     var apiEndpoint = null;
-    if (context !== undefined && context.hasOwnProperty('System.device.deviceId') && context.hasOwnProperty('System.user.permissions.consentToken') && context.hasOwnProperty('Sytem.apiEndpoint')){
-      deviceId = context.System.device.deviceId;
-      consentToken = context.System.user.permissions.consentToken;
-      apiEndpoint = context.System.apiEndpoint;
+    if (context !== undefined){
+      try {
+        deviceId = context.System.device.deviceId;
+        consentToken = context.System.user.permissions.consentToken;
+        apiEndpoint = context.System.apiEndpoint;
+      } catch (e) {
+        console.log('fuck developing alexa skills');
+      }
     }
     console.log(`deviceId=${JSON.stringify(deviceId)} consentToken=${JSON.stringify(consentToken)} apiEndpoint=${JSON.stringify(apiEndpoint)}`);
     // Dispatch to your skill's intent handlers
