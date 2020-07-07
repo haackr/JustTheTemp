@@ -43,7 +43,7 @@ function buildTemperatureResponse(temp) {
   return {
     outputSpeech: {
       type: 'PlainText',
-      text: `The current temperature is ${temp} degrees.`
+      text: `It's ${temp} degrees.`
     },
     card: {
       type: 'Simple',
