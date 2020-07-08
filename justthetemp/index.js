@@ -1,7 +1,5 @@
 'use strict';
 
-const http = require('http');
-const https = require('https');
 const axios = require('axios');
 
 // --------------- Helpers that build all of the responses -----------------------
@@ -31,7 +29,7 @@ function buildPermissionResponse() {
   return {
     outputSpeech: {
       type: 'PlainText',
-      text: "Just the Temperature needs permission to use your location. Please go into the alexa app manage permissions.",
+      text: "Just the Temperature needs permission to use your location. Please go into the alexa app to manage permissions.",
     },
     card: {
       type: 'AskForPermissionsConsent',
@@ -39,6 +37,21 @@ function buildPermissionResponse() {
     },
     shouldEndSession: true,
   };
+}
+
+function buildTemperatureResponse(temp) {
+  return {
+    outputSpeech: {
+      type: 'PlainText',
+      text: `It's ${temp.temp} degrees ${temp.units == 'imperial' ? 'Fahrenheit' : 'Celcius'}.`
+    },
+    card: {
+      type: 'Simple',
+      title: 'Current Temperature',
+      content: `${temp.temp}° ${temp.units == 'imperial' ? 'F' : 'C'}`
+    },
+    shouldEndSession: true
+  }
 }
 
 function buildResponse(sessionAttributes, speechletResponse) {
@@ -49,6 +62,8 @@ function buildResponse(sessionAttributes, speechletResponse) {
     };
 }
 
+// --------------- Functions that control the skill's behavior -----------------------
+
 async function getUnits(deviceId, apiEndpoint, apiAccessToken){
   const tempUrl = `/v2/devices/${deviceId}/settings/System.temperatureUnit`;
   try {
@@ -57,17 +72,32 @@ async function getUnits(deviceId, apiEndpoint, apiAccessToken){
         Authorization: `Bearer ${apiAccessToken}`
       }
     });
+    return response.data;
   } catch (error) {
     console.log(error);
   }
 }
 
-async function getAddress(context){
-  const fullUrl = apiEndpiont
+async function getAddress(deviceId, apiEndpoint, apiAccessToken){
+  const addrUrl = `/v1/devices/${deviceId}/settings/address/countryAndPostalCode`;
+  try {
+    let response = await axios.get(apiEndpoint + addrUrl, {
+      headers: {
+        Authorization: `Bearer ${apiAccessToken}`
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    if(error.response.status == '403'){
+      throw 'LocationPermissionError';
+    } else {
+      throw 'UnknownLocationError';
+    }
+  }
 }
 
 
-// --------------- Functions that control the skill's behavior -----------------------
 
 function getHelpResponse(callback) {
     // If we wanted to initialize the session to have some attributes we could add those here.
@@ -80,54 +110,82 @@ function getHelpResponse(callback) {
 function handleSessionEndRequest(callback) {
 }
 
-function handleTemperatureIntent(session, context, callback) {
+async function handleTemperatureIntent(session, context, callback) {
+  console.log("Handle Temp Context: " + JSON.stringify(context))
   const deviceId = context.System.device.deviceId;
   const apiEndpoint = context.System.apiEndpoint;
   const apiToken = context.System.apiAccessToken;
 
-  const units = getUnits(deviceId, apiEndpoint, apiAccessToken);
+  const units = await getUnits(deviceId, apiEndpoint, apiToken);
+  console.log(units);
 
+  let location = {};
+
+  if(context.System.device.supportedInterfaces.Geolocation && context.Geolocation.coordinate){
+    location.lat = context.Geolocation.coordinate.latitudeInDegrees;
+    location.lon = context.Geolocation.coordinate.longitudeInDegrees;
+    console.log(location);
+  } else {
+    let address;
+    try {
+      address = await getAddress(deviceId, apiEndpoint, apiToken);
+    } catch (error) {
+      console.log(error);
+      if (error == 'LocationPermissionError') callback({},buildPermissionResponse());
+      if (error == 'UnknownLocationError') callback({}, buildSpeechletResponse('ERROR', 'There was an unknown error getting your location. Please try again.','',true));
+      return;
+    }
+    console.log(address);
+    location = address;
+  }
+  let temp;
+  try {
+    temp = await getCurrentTemperature(location, units, callback);
+  } catch (error) {
+    if(error == 'UnknownWeatherError') callback({}, buildSpeechletResponse('ERROR', 'There was an unknown error getting weather data. Please try again.', '', true));
+    return
+  }
+  console.log(temp);
+  callback({}, buildTemperatureResponse(temp));
 }
 
-function getCurrentTemperature(location, callback) {
-  var temp = 0.0;
-  var units = '';
-  if (countryCode === 'US' || countryCode === 'BS' || countryCode === 'BZ' || countryCode === 'KY' || countryCode === 'MH' || countryCode === 'FM' || countryCode === 'PW' || countryCode === 'PR' || countryCode === 'GU' || countryCode === 'VI') {
-    units = 'imperial';
-  } else {
-    units = 'metric';
+async function getCurrentTemperature(location, deviceUnits, callback) {
+  let units = (deviceUnits === 'FAHRENHEIT'? 'imperial' : 'metric');
+  const weatherUrl = "http://api.openweathermap.org/data/2.5/weather?";
+  const weatherApiKey = process.env.weather_key;
+  let weatherQuery;
+
+  if(location.lat){
+    weatherQuery = `lat=${location.lat}&lon=${location.lon}`
   }
-  const req = http.request(`http://api.openweathermap.org/data/2.5/weather?zip=${postalCode},${countryCode}&APPID=${process.env.weather_key}&units=${units}`, (res) => {
-    console.log(`STATUS: ${res.statusCode}`);
-    console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
-    res.setEncoding('utf8');
-    if (res.statusCode === 200){
-      res.on('data', (chunk) => {
-        var weatherRes = JSON.parse(chunk);
-        // console.log(JSON.stringify(weatherRes));
-        temp = weatherRes.main.temp;
-        console.log(temp);
-        const cardTitle = 'Current Temperature';
-        const speechOutput = `The current temperature is ${Math.round(temp)} degrees.`;
-        const shouldEndSession = true;
-        callback({}, buildSpeechletResponse(cardTitle, speechOutput, null, shouldEndSession));
-      });
-    } else {
-      const cardTitle = 'Error';
-      const speechOutput = 'There was an error getting weather data. Please try again later.';
-      const shouldEndSession = true;
-      callback({},buildSpeechletResponse(cardTitle, speechOutput, null, shouldEndSession));
-    }
-  });
+  else {
+    weatherQuery = `zip=${location.postalCode},${location.countryCode}`
+  }
+  let result
+  try {
+    result = await axios.get(weatherUrl + weatherQuery + `&APPID=${weatherApiKey}&units=${units}`);
+  } catch (error) {
+    console.log(error);
+    throw 'UnknownWeatherError';
+  }
+  console.log(result);
 
-  req.on('error', (e) => {
-    const cardTitle = 'Error';
-    const speechOutput = 'There was an error getting weather data. Please try again later.';
-    const shouldEndSession = true;
-    callback({},buildSpeechletResponse(cardTitle, speechOutput, null, shouldEndSession));
-  });
+  let temp = result.data.main.temp;
+  const country = result.data.sys.country;
 
-  req.end();
+  if(deviceUnits == '' && (country == 'US' || country == 'KY' || country == 'LR')){
+    temp = convertCtoF(temp);
+    units = 'imperial';
+  }
+
+  return {
+    temp: Math.round(temp),
+    units: units
+  };
+}
+
+function convertCtoF(temp){
+  return (temp * 9/5) + 32;
 }
 
 // --------------- Events -----------------------
@@ -147,22 +205,7 @@ function onLaunch(launchRequest, session, context, callback) {
     console.log(`onLaunch requestId=${launchRequest.requestId}, sessionId=${session.sessionId}`);
     //console.log(`deviceId=${context.System.device.deviceId}, consentToken=${context.System.user.permissions.consentToken}`);
     console.log(JSON.stringify(launchRequest));
-
-    var deviceId = null;
-    var consentToken = null;
-    var apiEndpoint = null;
-    if (context !== undefined){
-      try {
-        deviceId = context.System.device.deviceId;
-        consentToken = context.System.user.permissions.consentToken;
-        apiEndpoint = context.System.apiEndpoint;
-      } catch (e) {
-        console.log(e);
-      }
-    }
-    handleTemperatureIntent(session, deviceId, consentToken, apiEndpoint, callback);
-    // Dispatch to your skill's launch.
-    //handleTemperatureIntent(intent, session, deviceId, consentToken, callback);
+    handleTemperatureIntent(session, context, callback);
 }
 
 /**
@@ -171,22 +214,8 @@ function onLaunch(launchRequest, session, context, callback) {
 function onIntent(intentRequest, session, context, callback) {
     console.log(`onIntent requestId=${intentRequest.requestId}, intentName = ${intentRequest.intent.name}, sessionId=${session.sessionId}`);
     // console.log(JSON.stringify(context));
-
-    const intent = intentRequest.intent;
     const intentName = intentRequest.intent.name;
-    var deviceId = null;
-    var consentToken = null;
-    var apiEndpoint = null;
-    if (context !== undefined){
-      try {
-        deviceId = context.System.device.deviceId;
-        consentToken = context.System.user.permissions.consentToken;
-        apiEndpoint = context.System.apiEndpoint;
-      } catch (e) {
-        console.log(e);
-      }
-    }
-    console.log(`deviceId=${JSON.stringify(deviceId)} consentToken=${JSON.stringify(consentToken)} apiEndpoint=${JSON.stringify(apiEndpoint)}`);
+    // console.log(`deviceId=${JSON.stringify(deviceId)} consentToken=${JSON.stringify(consentToken)} apiEndpoint=${JSON.stringify(apiEndpoint)}`);
     // Dispatch to your skill's intent handlers
     if (intentName === 'TemperatureIntent') {
         handleTemperatureIntent(session, context, callback);
