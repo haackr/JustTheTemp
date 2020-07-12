@@ -121,7 +121,7 @@ async function handleTemperatureIntent(session, context, callback) {
 
   let location = {};
 
-  if(context.System.device.supportedInterfaces.Geolocation && context.Geolocation.coordinate){
+  if(context.System.device.supportedInterfaces.Geolocation && context.System.user.permissions.scopes['alexa::devices:all:geolocation:read'].status === 'GRANTED'){
     location.lat = context.Geolocation.coordinate.latitudeInDegrees;
     location.lon = context.Geolocation.coordinate.longitudeInDegrees;
     console.log(location);
