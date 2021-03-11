@@ -1,16 +1,25 @@
 {
-  "name": "hello-world",
-  "version": "1.1.0",
-  "description": "alexa utility for quickly building skills",
+  "name": "justthetemp",
+  "version": "1.0.0",
+  "description": "",
   "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Amazon Alexa",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/haackr/JustTheTemp.git"
+  },
+  "author": "Ryan Haack",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/haackr/JustTheTemp/issues"
+  },
+  "homepage": "https://github.com/haackr/JustTheTemp#readme",
   "dependencies": {
-    "ask-sdk-core": "^2.6.0",
-    "ask-sdk-model": "^1.18.0",
-    "aws-sdk": "^2.326.0"
+    "axios": "^0.19.2"
   }
 }
