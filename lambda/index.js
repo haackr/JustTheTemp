@@ -232,7 +232,6 @@ function onSessionStarted(sessionStartedRequest, session) {
   console.log(
     `onSessionStarted requestId=${sessionStartedRequest.requestId}, sessionId=${session.sessionId}`
   );
-  console.log(process.env.weather_key);
 }
 
 /**
