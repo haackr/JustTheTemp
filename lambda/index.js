@@ -195,7 +195,7 @@ function convertCtoF(temp){
  */
 function onSessionStarted(sessionStartedRequest, session) {
     console.log(`onSessionStarted requestId=${sessionStartedRequest.requestId}, sessionId=${session.sessionId}`);
-    // console.log(process.env.weather_key);
+    console.log(process.env.weather_key);
 }
 
 /**
