@@ -1,0 +1,39 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "just the temperature",
+      "intents": [
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": []
+        },
+        {
+          "name": "TemperatureIntent",
+          "samples": [
+            "what is the current temperature",
+            "what is the temperature",
+            "how hot is it",
+            "how hot is it outsid",
+            "how cold is it",
+            "how cold is it outside",
+            "what the temperature is",
+            "what the current temperature is",
+            "what the weather is like",
+            "what the temperature outside is",
+            "the weather",
+            "the current temperature"
+          ]
+        }
+      ]
+    }
+  },
+  "version": "1"
+}

@@ -1,0 +1,96 @@
+{
+  "manifest": {
+    "publishingInformation": {
+      "locales": {
+        "en-US": {
+          "summary": "This skill gives you the current temperature without any of the other information you usually get from Alexa when you ask for the temperature.",
+          "examplePhrases": [
+            "Alexa, just the temperature",
+            "Alexa, open just the temperature",
+            "Alexa, ask just the temperature what the current temperature is"
+          ],
+          "keywords": [
+            "weather",
+            "temperature",
+            "local",
+            "short",
+            "concise",
+            "temp",
+            "outdoors",
+            "hot",
+            "cold",
+            "wind",
+            "rain",
+            "sleet",
+            "snow",
+            "sun",
+            "cloud",
+            "windy",
+            "rainy",
+            "sunny",
+            "cloudy",
+            "forecast"
+          ],
+          "name": "Just The Temperature",
+          "description": "This skill gives you the current temperature without any of the other information you usually get from Alexa when you ask for the temperature. All temperature data comes from OpenWeatherMap.",
+          "smallIconUri": "file://assets/images/en-US_smallIconUri.png",
+          "updatesDescription": "Now has support for location services.\nResponse is now more concise.",
+          "largeIconUri": "file://assets/images/en-US_largeIconUri.png"
+        }
+      },
+      "automaticDistribution": {
+        "isActive": false
+      },
+      "isAvailableWorldwide": true,
+      "testingInstructions": "Launch the skill or ask the the skill the skill what the temperature is and it should give you the current local temperature. This skill requires the user to have provided permissions to access the country code / postal code and/or location services.",
+      "category": "WEATHER",
+      "distributionCountries": []
+    },
+    "apis": {
+      "custom": {
+        "endpoint": {
+          "uri": "arn:aws:lambda:us-east-1:792617537081:function:70de330a-7fb5-4939-a9b6-06cdf2e0690f:Release_0"
+        },
+        "interfaces": [],
+        "regions": {
+          "EU": {
+            "endpoint": {
+              "uri": "arn:aws:lambda:eu-west-1:792617537081:function:70de330a-7fb5-4939-a9b6-06cdf2e0690f:Release_0"
+            }
+          },
+          "NA": {
+            "endpoint": {
+              "uri": "arn:aws:lambda:us-east-1:792617537081:function:70de330a-7fb5-4939-a9b6-06cdf2e0690f:Release_0"
+            }
+          },
+          "FE": {
+            "endpoint": {
+              "uri": "arn:aws:lambda:us-west-2:792617537081:function:70de330a-7fb5-4939-a9b6-06cdf2e0690f:Release_0"
+            }
+          }
+        }
+      }
+    },
+    "manifestVersion": "1.0",
+    "permissions": [
+      {
+        "name": "alexa:devices:all:address:country_and_postal_code:read"
+      },
+      {
+        "name": "alexa::devices:all:geolocation:read"
+      }
+    ],
+    "privacyAndCompliance": {
+      "allowsPurchases": false,
+      "locales": {
+        "en-US": {
+          "privacyPolicyUrl": "https://haackr.com/just-the-temp/privacy-policy"
+        }
+      },
+      "containsAds": false,
+      "isExportCompliant": true,
+      "isChildDirected": false,
+      "usesPersonalInfo": false
+    }
+  }
+}
