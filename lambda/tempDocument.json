@@ -15,12 +15,21 @@
     "parameters": ["payload"],
     "items": [
       {
-        "type": "Text",
-        "textAlign": "center",
-        "textAlignVertical": "center",
-        "text": "${payload.weather.temp}°${payload.weather.units}",
-        "fontSize": "200dp",
-        "height": "100vh"
+        "type": "Frame",
+        "width": "100vw",
+        "height": "100vh",
+        "backgroundColor": "#094074",
+        "items": [
+          {
+            "type": "Text",
+            "width": "100vw",
+            "height": "100vh",
+            "textAlign": "center",
+            "textAlignVertical": "center",
+            "text": "${payload.weather.temp}°${payload.weather.units}",
+            "fontSize": "40vw"
+          }
+        ]
       }
     ]
   }
