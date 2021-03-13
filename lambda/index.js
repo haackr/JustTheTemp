@@ -115,7 +115,11 @@ const HandleTemperatureAndLaunchIntent = {
       location = context.Geolocation.coordinate;
     } else {
       const deviceAddressServiceClient = handlerInput.serviceClientFactory.getAddressServiceClient();
-      location = await deviceAddressServiceClient(deviceId);
+      try {
+        location = await deviceAddressServiceClient(deviceId);
+      } catch (error) {
+        console.log(error);
+      }
     }
     console.log(location);
     // Get the preferred units
