@@ -70,7 +70,58 @@ const HandleTemperatureAndLaunchIntent = {
           "TemperatureIntent")
     );
   },
-  handle(handlerInput) {
+  async handle(handlerInput) {
+    const { context } = handlerInput.requestEnvelope;
+    const deviceId = Alexa.getDeviceId(requestEnvelope);
+    // Check to see if they have granted address or location services permissions
+    const hasGeoLocationPermission =
+      context.System.user.permissions.scopes[
+        "alexa::devices:all:geolocation:read"
+      ].status === "GRANTED";
+
+    const hasAddressPermission = context.System.user.permissions.consentToken;
+
+    if (!hasGeoLocationPermission && !hasAddressPermission) {
+      return handlerInput.responseBuilder
+        .speak("Please enable location permissions in the Amazon Alexa app.")
+        .withAskForPermissionsConsentCard([
+          "read::alexa:device:all:address:country_and_postal_code",
+          "read::alexa:device:all:geolocation",
+        ])
+        .withShouldEndSession(true)
+        .getResponse();
+    }
+
+    if (
+      hasGeoLocationPermission &&
+      !context.Geolocation &&
+      !hasAddressPermission
+    ) {
+      return handlerInput.responseBuilder
+        .speak(
+          "Please enable location services on your device or enable address permissions in the Amazon Alexa app."
+        )
+        .withAskForPermissionsConsentCard([
+          "read::alexa:device:all:address:country_and_postal_code",
+          "read::alexa:device:all:geolocation",
+        ])
+        .withShouldEndSession(true)
+        .getResponse();
+    }
+
+    // Get their location
+    let location;
+    if (hasGeoLocationPermission && context.Geolocation) {
+      location = context.Geolocation.coordinate;
+    } else {
+      const deviceAddressServiceClient = handlerInput.serviceClientFactory.getAddressServiceClient();
+      location = await deviceAddressServiceClient(deviceId);
+    }
+    console.log(location);
+    // Get the preferred units
+
+    // Using the location and units, get the current weather
+
     return handlerInput.responseBuilder
       .speak("The temperature will go here.")
       .getResponse();
@@ -90,6 +141,7 @@ exports.handler = async function (event, context) {
         SessionEndedRequestHandler
       )
       .addErrorHandler(ErrorHandler)
+      .withApiClient(new Alexa.DefaultApiClient())
       .create();
   }
 
