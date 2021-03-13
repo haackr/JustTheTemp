@@ -1,7 +1,6 @@
 "use strict";
 require("dotenv").config();
 const Alexa = require("ask-sdk");
-const { getCurrentTemperature } = require("./utils");
 const {
   HandleTemperatureAndLaunchIntent,
 } = require("./handlers/TemperatureHandler");

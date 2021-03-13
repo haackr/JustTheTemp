@@ -1,5 +1,6 @@
 "use strict";
 const Alexa = require("ask-sdk");
+const { getCurrentTemperature } = require("../utils");
 
 const HandleTemperatureAndLaunchIntent = {
   canHandle(handlerInput) {
