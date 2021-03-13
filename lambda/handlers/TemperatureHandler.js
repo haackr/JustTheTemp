@@ -67,6 +67,14 @@ const HandleTemperatureAndLaunchIntent = {
         );
       } catch (error) {
         console.log(error);
+        return handlerInput.responseBuilder
+          .speak("Please enable location permissions in the Amazon Alexa app.")
+          .withAskForPermissionsConsentCard([
+            "read::alexa:device:all:address:country_and_postal_code",
+            "read::alexa:device:all:geolocation",
+          ])
+          .withShouldEndSession(true)
+          .getResponse();
       }
     }
 
