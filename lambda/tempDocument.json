@@ -1,26 +1,56 @@
 {
-  "type": "APL",
-  "version": "1.2",
-  "description": "A simple hello world APL document.",
-  "settings": {},
-  "theme": "dark",
-  "import": [],
-  "resources": [],
-  "styles": {},
-  "onMount": [],
-  "graphics": {},
-  "commands": {},
-  "layouts": {},
-  "mainTemplate": {
-    "parameters": ["payload"],
-    "items": [
-      {
-        "type": "Text",
-        "height": "100vh",
-        "textAlign": "center",
-        "textAlignVertical": "center",
-        "text": "${payload.weather.temp}°${payload.weather.units}"
-      }
-    ]
-  }
+  "document": {
+    "type": "APL",
+    "version": "1.2",
+    "description": "A simple hello world APL document.",
+    "settings": {},
+    "theme": "dark",
+    "import": [],
+    "resources": [],
+    "styles": {},
+    "onMount": [],
+    "graphics": {},
+    "commands": {},
+    "layouts": {},
+    "mainTemplate": {
+      "parameters": ["payload"],
+      "items": [
+        {
+          "type": "Container",
+          "items": [
+            {
+              "type": "Image",
+              "width": "150dp",
+              "height": "150dp",
+              "source": "https://openweathermap.org/img/wn/${payload.weather.icon}@2x.png",
+              "scale": "fill",
+              "align": "center",
+              "alignSelf": "center",
+              "top": "27vh"
+            },
+            {
+              "type": "Text",
+              "position": "relative",
+              "alignSelf": "auto",
+              "textAlign": "center",
+              "textAlignVertical": "auto",
+              "text": "${payload.weather.temp}°${payload.weather.units}",
+              "fontSize": "80dp",
+              "top": "20vh"
+            }
+          ],
+          "height": "100%",
+          "width": "100%"
+        }
+      ]
+    }
+  },
+  "datasources": {
+    "weather": {
+      "temp": "47",
+      "units": "F",
+      "icon": "04d"
+    }
+  },
+  "sources": {}
 }

@@ -26,6 +26,7 @@ async function getCurrentTemperature(location, deviceUnits) {
 
   let temp = result.data.main.temp;
   const country = result.data.sys.country;
+  const icon = result.data.main.icon;
 
   if (
     deviceUnits === "" &&
@@ -38,6 +39,7 @@ async function getCurrentTemperature(location, deviceUnits) {
   return {
     temp: Math.round(temp),
     units,
+    icon,
   };
 }
 
