@@ -15,7 +15,6 @@ const HelpIntentHandler = {
 
     return handlerInput.responseBuilder
       .speak(speechText)
-      .reprompt(speechText)
       .withSimpleCard("How to Use Just The Temperature", speechText)
       .getResponse();
   },
@@ -58,7 +57,6 @@ const ErrorHandler = {
     console.log(`ERROR OCCURED: ${error.message}`);
     return handlerInput.responseBuilder
       .speak("Sorry an error occured. Please try again.")
-      .reprompt("Sorry an error occured. Please try again.")
       .getResponse();
   },
 };
@@ -75,7 +73,6 @@ const HandleTemperatureAndLaunchIntent = {
   handle(handlerInput) {
     return handlerInput.responseBuilder
       .speak("The temperature will go here.")
-      .reprompt("temp reprompt")
       .getResponse();
   },
 };
