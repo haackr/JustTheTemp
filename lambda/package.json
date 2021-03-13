@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/haackr/JustTheTemp#readme",
   "dependencies": {
+    "ask-sdk": "^2.10.0",
     "axios": "^0.21.1",
     "dotenv": "^8.2.0"
   }
