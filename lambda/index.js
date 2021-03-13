@@ -114,9 +114,11 @@ const HandleTemperatureAndLaunchIntent = {
     if (hasGeoLocationPermission && context.Geolocation) {
       location = context.Geolocation.coordinate;
     } else {
-      const deviceAddressServiceClient = handlerInput.serviceClientFactory.getAddressServiceClient();
+      const deviceAddressServiceClient = handlerInput.serviceClientFactory.getDeviceAddressServiceClient();
       try {
-        location = await deviceAddressServiceClient(deviceId);
+        location = await deviceAddressServiceClient.getCountryAndPostalCode(
+          deviceId
+        );
       } catch (error) {
         console.log(error);
       }
