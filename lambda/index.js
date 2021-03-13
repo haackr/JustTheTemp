@@ -1,6 +1,7 @@
 "use strict";
 require("dotenv");
 const Alexa = require("ask-sdk");
+const { getCurrentTemperature } = require("./utils");
 
 const HelpIntentHandler = {
   canHanle(handlerInput) {
@@ -135,9 +136,14 @@ const HandleTemperatureAndLaunchIntent = {
     console.log(units);
 
     // Using the location and units, get the current weather
+    const { temp, returnedUnits } = await getCurrentTemperature(
+      location,
+      units
+    );
+    console.log(temp, returnedUnits);
 
     return handlerInput.responseBuilder
-      .speak("The temperature will go here.")
+      .speak(`It's ${temp} degrees.`)
       .getResponse();
   },
 };
