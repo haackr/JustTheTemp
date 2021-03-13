@@ -37,7 +37,7 @@ async function getCurrentTemperature(location, deviceUnits) {
 
   return {
     temp: Math.round(temp),
-    units: units,
+    units,
   };
 }
 

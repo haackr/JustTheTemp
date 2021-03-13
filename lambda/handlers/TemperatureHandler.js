@@ -89,11 +89,11 @@ const HandleTemperatureAndLaunchIntent = {
     console.log(units);
 
     // Using the location and units, get the current weather
-    const { temp, returnedUnits } = await getCurrentTemperature(
+    const { temp, units: returnedUnits } = await getCurrentTemperature(
       location,
       units
     );
-    console.log(temp, returnedUnits);
+    console.log(returnedUnits);
 
     let response = handlerInput.responseBuilder.speak(`It's ${temp} degrees.`);
 
