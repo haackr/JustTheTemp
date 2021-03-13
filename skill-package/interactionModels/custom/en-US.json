@@ -16,6 +16,10 @@
           "samples": []
         },
         {
+          "name": "AMAZON.FallbackIntent",
+          "samples": []
+        },
+        {
           "name": "TemperatureIntent",
           "samples": [
             "what is the current temperature",

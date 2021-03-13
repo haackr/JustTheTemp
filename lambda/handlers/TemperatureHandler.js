@@ -1,6 +1,9 @@
 "use strict";
 const Alexa = require("ask-sdk");
 const { getCurrentTemperature } = require("../utils");
+const tempDocument = require("../tempDocument.json");
+
+const TEMP_TOKEN = "tempToken";
 
 const HandleTemperatureAndLaunchIntent = {
   canHandle(handlerInput) {
@@ -8,7 +11,9 @@ const HandleTemperatureAndLaunchIntent = {
       Alexa.getRequestType(handlerInput.requestEnvelope) === "LaunchRequest" ||
       (Alexa.getRequestType(handlerInput.requestEnvelope) === "IntentRequest" &&
         Alexa.getIntentName(handlerInput.requestEnvelope) ===
-          "TemperatureIntent")
+          "TemperatureIntent") ||
+      Alexa.getIntentName(handlerInput.requestEnvelope) ===
+        "AMAZON.FallbackIntent"
     );
   },
   async handle(handlerInput) {
@@ -82,9 +87,26 @@ const HandleTemperatureAndLaunchIntent = {
     );
     console.log(temp, returnedUnits);
 
-    return handlerInput.responseBuilder
-      .speak(`It's ${temp} degrees.`)
-      .getResponse();
+    let response = handlerInput.responseBuilder.speak(`It's ${temp} degrees.`);
+
+    if (
+      Alexa.getSupportedInterfaces(handlerInput.requestEnvelope)[
+        "Alexa.Presentation.APL"
+      ]
+    ) {
+      response.addDirective({
+        type: "Alexa.Presentation.APL.RenderDocument",
+        token: TEMP_TOKEN,
+        document: tempDocument,
+      });
+    } else if (
+      Alexa.getSupportedInterfaces(handlerInput.requestEnvelope)[
+        "Alexa.Presentation.APLT"
+      ]
+    ) {
+    }
+
+    return response.getResponse();
   },
 };
 
