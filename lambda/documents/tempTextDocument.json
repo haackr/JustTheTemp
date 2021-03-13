@@ -1,0 +1,13 @@
+{
+  "version": "1.0",
+  "type": "APLT",
+  "mainTemplate": {
+    "item": {
+      "parameters": ["weather"],
+      "type": "Text",
+      "text": "${weather.temp}°${weather.units}",
+      "textAlign": "center",
+      "overflow": "marquee"
+    }
+  }
+}

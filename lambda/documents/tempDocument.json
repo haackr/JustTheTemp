@@ -1,7 +1,7 @@
 {
   "type": "APL",
   "version": "1.2",
-  "description": "A simple hello world APL document.",
+  "description": "Displays the temperature on the screen.",
   "settings": {},
   "theme": "dark",
   "import": [],

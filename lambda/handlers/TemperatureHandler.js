@@ -1,7 +1,8 @@
 "use strict";
 const Alexa = require("ask-sdk");
 const { getCurrentTemperature } = require("../utils");
-const tempDocument = require("../tempDocument.json");
+const tempDocument = require("../documents/tempDocument.json");
+const tempTextDocument = require("../documents/tempTextDocument.json");
 
 const TEMP_TOKEN = "tempToken";
 
@@ -119,6 +120,14 @@ const HandleTemperatureAndLaunchIntent = {
         "Alexa.Presentation.APLT"
       ]
     ) {
+      response.addDirective({
+        type: "Alexa.Presentation.APLT.RenderDocument",
+        token: TEMP_TOKEN,
+        document: tempTextDocument,
+        datasources: {
+          weather,
+        },
+      });
     }
 
     return response.getResponse();
