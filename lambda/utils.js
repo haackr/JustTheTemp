@@ -1,4 +1,5 @@
 "use strict";
+require("dotenv");
 const axios = require("axios");
 
 async function getCurrentTemperature(location, deviceUnits) {
