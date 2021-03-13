@@ -102,16 +102,17 @@ const HandleTemperatureAndLaunchIntent = {
         "Alexa.Presentation.APL"
       ]
     ) {
+      const weather = {
+        temp: temp,
+        units: returnedUnits === "imperial" ? "F" : "C",
+      };
       response.addDirective({
         type: "Alexa.Presentation.APL.RenderDocument",
         token: TEMP_TOKEN,
         document: tempDocument,
-        datasources: JSON.stringify({
-          weather: {
-            temp: temp,
-            units: returnedUnits === "imperial" ? "F" : "C",
-          },
-        }),
+        datasources: {
+          weather,
+        },
       });
     } else if (
       Alexa.getSupportedInterfaces(handlerInput.requestEnvelope)[
