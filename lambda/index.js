@@ -123,8 +123,16 @@ const HandleTemperatureAndLaunchIntent = {
         console.log(error);
       }
     }
-    console.log(location);
+
     // Get the preferred units
+    const upsServiceClient = handlerInput.serviceClientFactory.getUpsServiceClient();
+    let units;
+    try {
+      units = await upsServiceClient.getSystemTemperatureUnit(deviceId);
+    } catch (error) {
+      console.log(error);
+    }
+    console.log(units);
 
     // Using the location and units, get the current weather
 
