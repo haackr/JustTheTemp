@@ -108,12 +108,8 @@ const HandleTemperatureAndLaunchIntent = {
         document: tempDocument,
         datasources: {
           weather: {
-            type: "object",
-            objectId: "weather",
-            properties: {
-              temp: `${temp}`,
-              units: returnedUnits === "imperial" ? "F" : "C",
-            },
+            temp: temp,
+            units: returnedUnits === "imperial" ? "F" : "C",
           },
         },
       });
