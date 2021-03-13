@@ -18,7 +18,7 @@
         "type": "Frame",
         "width": "100vw",
         "height": "100vh",
-        "backgroundColor": "#094074",
+        "backgroundColor": "#232F3E",
         "items": [
           {
             "type": "Text",
@@ -27,7 +27,8 @@
             "textAlign": "center",
             "textAlignVertical": "center",
             "text": "${payload.weather.temp}°${payload.weather.units}",
-            "fontSize": "40vw"
+            "fontSize": "40vw",
+            "color": "#FAFAFA"
           }
         ]
       }
