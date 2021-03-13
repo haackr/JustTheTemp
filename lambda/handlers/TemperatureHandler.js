@@ -89,7 +89,7 @@ const HandleTemperatureAndLaunchIntent = {
     console.log(units);
 
     // Using the location and units, get the current weather
-    const { temp, units: returnedUnits, icon } = await getCurrentTemperature(
+    const { temp, units: returnedUnits } = await getCurrentTemperature(
       location,
       units
     );
@@ -105,7 +105,6 @@ const HandleTemperatureAndLaunchIntent = {
       const weather = {
         temp,
         units: returnedUnits === "imperial" ? "F" : "C",
-        icon,
       };
       response.addDirective({
         type: "Alexa.Presentation.APL.RenderDocument",
