@@ -89,10 +89,9 @@ const HandleTemperatureAndLaunchIntent = {
     console.log(units);
 
     // Using the location and units, get the current weather
-    const { temp, units: returnedUnits } = await getCurrentTemperature(
+    const { temp, units: returnedUnits, icon } = await getCurrentTemperature(
       location,
-      units,
-      icon
+      units
     );
     console.log(returnedUnits);
 
