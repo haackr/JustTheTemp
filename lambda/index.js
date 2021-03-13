@@ -72,7 +72,7 @@ const HandleTemperatureAndLaunchIntent = {
   },
   async handle(handlerInput) {
     const { context } = handlerInput.requestEnvelope;
-    const deviceId = Alexa.getDeviceId(requestEnvelope);
+    const deviceId = Alexa.getDeviceId(handlerInput.requestEnvelope);
     // Check to see if they have granted address or location services permissions
     const hasGeoLocationPermission =
       context.System.user.permissions.scopes[
