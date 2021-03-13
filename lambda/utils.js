@@ -1,5 +1,5 @@
 "use strict";
-require("dotenv");
+require("doenv").config();
 const axios = require("axios");
 
 async function getCurrentTemperature(location, deviceUnits) {
@@ -28,8 +28,8 @@ async function getCurrentTemperature(location, deviceUnits) {
   const country = result.data.sys.country;
 
   if (
-    deviceUnits == "" &&
-    (country == "US" || country == "KY" || country == "LR")
+    deviceUnits === "" &&
+    (country === "US" || country === "KY" || country === "LR")
   ) {
     temp = convertCtoF(temp);
     units = "imperial";
@@ -39,6 +39,10 @@ async function getCurrentTemperature(location, deviceUnits) {
     temp: Math.round(temp),
     units: units,
   };
+}
+
+function convertCtoF(temp) {
+  return (temp * 9) / 5 + 32;
 }
 
 module.exports = {
