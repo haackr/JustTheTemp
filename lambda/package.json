@@ -18,7 +18,7 @@
   "bugs": {
     "url": "https://github.com/haackr/JustTheTemp/issues"
   },
-  "homepage": "https://github.com/haackr/JustTheTemp",
+  "homepage": "https://github.com/haackr/JustTheTemp#readme",
   "dependencies": {
     "ask-sdk": "^2.10.0",
     "axios": "^0.21.1",
