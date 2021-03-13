@@ -1,6 +1,6 @@
 {
   "type": "APL",
-  "version": "1.5",
+  "version": "1.2",
   "description": "A simple hello world APL document.",
   "settings": {},
   "theme": "dark",
@@ -12,14 +12,14 @@
   "commands": {},
   "layouts": {},
   "mainTemplate": {
-    "parameters": ["weather"],
+    "parameters": ["payload"],
     "items": [
       {
         "type": "Text",
         "height": "100vh",
         "textAlign": "center",
         "textAlignVertical": "center",
-        "text": "${weather.temp}°${weather.units}"
+        "text": "${payload.weather.temp}°${payload.weather.units}"
       }
     ]
   }
