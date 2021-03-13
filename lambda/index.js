@@ -80,6 +80,8 @@ const HandleTemperatureAndLaunchIntent = {
   },
 };
 
+let skill;
+
 exports.handler = async function (event, context) {
   console.log(`REQUEST+++${JSON.stringify(event)}`);
   if (!skill) {
