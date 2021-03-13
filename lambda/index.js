@@ -144,7 +144,7 @@ exports.handler = async function (event, context) {
         CancelAndStopIntentHandler,
         SessionEndedRequestHandler
       )
-      .addErrorHandler(ErrorHandler)
+      .addErrorHandlers(ErrorHandler)
       .withApiClient(new Alexa.DefaultApiClient())
       .create();
   }
