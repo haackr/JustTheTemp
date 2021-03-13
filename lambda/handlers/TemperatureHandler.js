@@ -106,6 +106,12 @@ const HandleTemperatureAndLaunchIntent = {
         type: "Alexa.Presentation.APL.RenderDocument",
         token: TEMP_TOKEN,
         document: tempDocument,
+        datasources: {
+          weather: {
+            temp: temp,
+            units: returnedUnits === "imperial" ? "F" : "C",
+          },
+        },
       });
     } else if (
       Alexa.getSupportedInterfaces(handlerInput.requestEnvelope)[

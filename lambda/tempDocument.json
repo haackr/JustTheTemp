@@ -12,14 +12,14 @@
   "commands": {},
   "layouts": {},
   "mainTemplate": {
-    "parameters": ["payload"],
+    "parameters": ["weather"],
     "items": [
       {
         "type": "Text",
         "height": "100vh",
         "textAlign": "center",
         "textAlignVertical": "center",
-        "text": "Hello World!"
+        "text": "${weather.temp}°${weather.units}"
       }
     ]
   }
