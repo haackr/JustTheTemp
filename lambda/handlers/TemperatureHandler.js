@@ -28,8 +28,7 @@ const HandleTemperatureAndLaunchIntent = {
 
     const hasAddressPermission = context.System.user.permissions.consentToken;
 
-    if (!hasGeoLocationPermission) {
-      // && !hasAddressPermission) {
+    if (!hasGeoLocationPermission || !hasAddressPermission) {
       return handlerInput.responseBuilder
         .speak("Please enable location permissions in the Amazon Alexa app.")
         .withAskForPermissionsConsentCard([
@@ -40,22 +39,22 @@ const HandleTemperatureAndLaunchIntent = {
         .getResponse();
     }
 
-    if (
-      hasGeoLocationPermission &&
-      !context.Geolocation &&
-      !hasAddressPermission
-    ) {
-      return handlerInput.responseBuilder
-        .speak(
-          "Please enable location services on your device or enable address permissions in the Amazon Alexa app."
-        )
-        .withAskForPermissionsConsentCard([
-          "read::alexa:device:all:address:country_and_postal_code",
-          "read::alexa:device:all:geolocation",
-        ])
-        .withShouldEndSession(true)
-        .getResponse();
-    }
+    // if (
+    //   hasGeoLocationPermission &&
+    //   !context.Geolocation &&
+    //   !hasAddressPermission
+    // ) {
+    //   return handlerInput.responseBuilder
+    //     .speak(
+    //       "Please enable location services on your device or enable address permissions in the Amazon Alexa app."
+    //     )
+    //     .withAskForPermissionsConsentCard([
+    //       "read::alexa:device:all:address:country_and_postal_code",
+    //       "read::alexa:device:all:geolocation",
+    //     ])
+    //     .withShouldEndSession(true)
+    //     .getResponse();
+    // }
 
     // Get their location
     let location;
