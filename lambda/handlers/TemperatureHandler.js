@@ -28,7 +28,8 @@ const HandleTemperatureAndLaunchIntent = {
 
     const hasAddressPermission = context.System.user.permissions.consentToken;
 
-    if (!hasGeoLocationPermission && !hasAddressPermission) {
+    if (!hasGeoLocationPermission) {
+      // && !hasAddressPermission) {
       return handlerInput.responseBuilder
         .speak("Please enable location permissions in the Amazon Alexa app.")
         .withAskForPermissionsConsentCard([
@@ -98,10 +99,10 @@ const HandleTemperatureAndLaunchIntent = {
 
     let response = handlerInput.responseBuilder.speak(`It's ${temp} degrees.`);
 
-      const weather = {
-        temp,
-        units: returnedUnits === "imperial" ? "F" : "C",
-      };
+    const weather = {
+      temp,
+      units: returnedUnits === "imperial" ? "F" : "C",
+    };
     if (
       Alexa.getSupportedInterfaces(handlerInput.requestEnvelope)[
         "Alexa.Presentation.APL"
